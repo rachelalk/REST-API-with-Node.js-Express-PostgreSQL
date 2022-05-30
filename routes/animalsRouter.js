@@ -12,16 +12,16 @@
 //     -delete
 
 //Import pool
-import pg from "pg";
 import express from "express";
 const animalsRouter = express.Router();
 
-import { query } from "../db/index.js";
 import {
 	getAnimalById,
 	getAnimalByName,
 	getAllAnimals,
 	createNewAnimal,
+	deleteAnimalByID,
+	getAnimalByConservationStatus,
 } from "../models/animalModels.js";
 
 //Select all from animals
@@ -42,20 +42,29 @@ animalsRouter.get("/:id", async function (req, res) {
 
 	const responseObject = {
 		success: true,
-		message: `Displaying animals with id ${id}`,
+		message: `Displaying animal with id ${id}`,
 		payload: await getAnimalById(id),
 	};
 	res.json(responseObject);
 });
 
-//search animal by animal_name
+//search animal by animal_name if no name display all
 animalsRouter.get("/", async function (req, res) {
 	const name = req.query.name;
+	const conservationStatus = req.query.status;
 	if (name) {
 		const responseObject = {
 			success: true,
 			message: `Displaying ${name}`,
 			payload: await getAnimalByName(name),
+		};
+		res.json(responseObject);
+	}
+	if (conservationStatus) {
+		const responseObject = {
+			success: true,
+			message: `Displaying animals with conservation status: ${conservationStatus}`,
+			payload: await getAnimalByConservationStatus(conservationStatus),
 		};
 		res.json(responseObject);
 	} else {
@@ -68,6 +77,7 @@ animalsRouter.get("/", async function (req, res) {
 	}
 });
 
+//add new animal
 animalsRouter.post("/", async function (req, res) {
 	console.log(req.body);
 	const body = req.body;
@@ -76,6 +86,17 @@ animalsRouter.post("/", async function (req, res) {
 		success: true,
 		message: "Create new animal data",
 		payload: await createNewAnimal(body),
+	};
+	res.json(responseObject);
+});
+
+//delete by ID
+animalsRouter.delete("/:id", async function (req, res) {
+	const id = req.params.id;
+	const responseObject = {
+		success: true,
+		message: `Deleted animal with id ${id}. Displaying remaining data.`,
+		payload: await deleteAnimalByID(id),
 	};
 	res.json(responseObject);
 });

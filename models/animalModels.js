@@ -41,3 +41,16 @@ export async function createNewAnimal(body) {
 	const result = await query(`SELECT * FROM animals;`);
 	return result.rows;
 }
+
+export async function deleteAnimalByID(id) {
+	await query(`DELETE FROM animals WHERE id = ${id};`);
+	const result = await query(`SELECT * FROM animals;`);
+	return result.rows;
+}
+
+export async function getAnimalByConservationStatus(conservationStatus) {
+	const result = await query(
+		`SELECT * FROM animals WHERE conservation_status = '${conservationStatus.toLowerCase()}';`
+	);
+	return result.rows;
+}
